@@ -1,0 +1,12 @@
+{
+  "name": "carservice-cds",
+  "version": "1.0.0",
+  "devDependencies": {
+    "@sap/cds-dk": "^9.7.2"
+  },
+  "dependencies": {},
+  "sapux": [
+    "app/cars",
+    "app/customers"
+  ]
+}
