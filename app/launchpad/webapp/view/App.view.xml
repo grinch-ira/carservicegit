@@ -1,0 +1,30 @@
+<mvc:View
+    controllerName="launchpad.controller.App"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+
+    <VBox
+        width="100%"
+        height="100%"
+        justifyContent="Center"
+        alignItems="Center">
+
+        <Button
+            text="Cars"
+            icon="sap-icon://car-rental"
+            type="Emphasized"
+            width="300px"
+            press=".onCarsPress"
+            class="sapUiSmallMargin" />
+
+        <Button
+            text="Customers"
+            icon="sap-icon://customer"
+            type="Emphasized"
+            width="300px"
+            press=".onCustomersPress"
+            class="sapUiSmallMargin" />
+
+    </VBox>
+
+</mvc:View>
