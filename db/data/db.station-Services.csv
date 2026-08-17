@@ -1,0 +1,7 @@
+ID,name,description,price,duration,createdAt,createdBy,modifiedAt,modifiedBy
+a7c6409f-9d72-43f4-a234-82a3b1186904,Oil change,Engine oil and oil filter replacement,50.00,45,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+67013acb-82da-4127-850b-f8264fff9eb6,Brake inspection,Complete brake system inspection,30.00,30,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+f494d799-8fb7-4e55-a807-6aa32ae67bd5,Wheel alignment,Front and rear wheel alignment,60.00,60,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+ec53c4c9-a462-405d-b8ae-d132f31244be,Engine diagnostics,Computer engine diagnostics,40.00,45,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+dc340e4a-03e7-43b4-80b2-c04cce0194e5,Brake pad replacement,Front or rear brake pad replacement,120.00,90,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+2b58f25c-511f-4cbe-a044-09b38b129182,Battery replacement,Car battery replacement and testing,35.00,30,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer

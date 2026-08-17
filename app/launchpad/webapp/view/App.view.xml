@@ -70,6 +70,21 @@
 
                             </GenericTile>
 
+                            <GenericTile
+                                id="partssTile"
+                                header="Parts"
+                                subheader="Manage Parts"
+                                press="onPartspress"
+                                class="sapUiSmallMargin">
+
+                                <TileContent>
+                                    <NumericContent
+                                        icon="sap-icon://settings"
+                                        value="Parts" />
+                                </TileContent>
+
+                            </GenericTile>
+
                         </HBox>
 
                     </VBox>

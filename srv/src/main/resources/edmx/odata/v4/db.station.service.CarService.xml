@@ -9,6 +9,9 @@
   <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
     <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
   </edmx:Reference>
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/HTML5.xml">
+    <edmx:Include Alias="HTML5" Namespace="com.sap.vocabularies.HTML5.v1"/>
+  </edmx:Reference>
   <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml">
     <edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
   </edmx:Reference>
@@ -33,6 +36,26 @@
         <EntitySet Name="Customers" EntityType="db.station.service.CarService.Customers">
           <NavigationPropertyBinding Path="SiblingEntity" Target="Customers"/>
         </EntitySet>
+        <EntitySet Name="Parts" EntityType="db.station.service.CarService.Parts">
+          <NavigationPropertyBinding Path="SiblingEntity" Target="Parts"/>
+        </EntitySet>
+        <EntitySet Name="RepairOrderItems" EntityType="db.station.service.CarService.RepairOrderItems">
+          <NavigationPropertyBinding Path="repairOrder" Target="RepairOrders"/>
+          <NavigationPropertyBinding Path="part" Target="Parts"/>
+          <NavigationPropertyBinding Path="SiblingEntity" Target="RepairOrderItems"/>
+        </EntitySet>
+        <EntitySet Name="RepairOrders" EntityType="db.station.service.CarService.RepairOrders">
+          <NavigationPropertyBinding Path="car" Target="Cars"/>
+          <NavigationPropertyBinding Path="SiblingEntity" Target="RepairOrders"/>
+        </EntitySet>
+        <EntitySet Name="RepairOrderServices" EntityType="db.station.service.CarService.RepairOrderServices">
+          <NavigationPropertyBinding Path="repairOrder" Target="RepairOrders"/>
+          <NavigationPropertyBinding Path="service" Target="Services"/>
+          <NavigationPropertyBinding Path="SiblingEntity" Target="RepairOrderServices"/>
+        </EntitySet>
+        <EntitySet Name="Services" EntityType="db.station.service.CarService.Services">
+          <NavigationPropertyBinding Path="SiblingEntity" Target="Services"/>
+        </EntitySet>
       </EntityContainer>
       <EntityType Name="Cars">
         <Key>
@@ -45,9 +68,11 @@
         <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
         <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
         <Property Name="licensePlate" Type="Edm.String" MaxLength="20"/>
-        <Property Name="brand" Type="Edm.String" MaxLength="40"/>
+        <Property Name="brand" Type="Edm.String"/>
         <Property Name="model" Type="Edm.String" MaxLength="40"/>
-        <Property Name="year" Type="Edm.Int32"/>
+        <Property Name="year" Type="Edm.String" MaxLength="4"/>
+        <Property Name="mileage" Type="Edm.Int32"/>
+        <Property Name="vin" Type="Edm.String" MaxLength="17"/>
         <NavigationProperty Name="customer" Type="db.station.service.CarService.Customers">
           <ReferentialConstraint Property="customer_ID" ReferencedProperty="ID"/>
         </NavigationProperty>
@@ -69,11 +94,141 @@
         <Property Name="name" Type="Edm.String" MaxLength="30"/>
         <Property Name="surname" Type="Edm.String" MaxLength="30"/>
         <Property Name="email" Type="Edm.String" MaxLength="30"/>
+        <Property Name="fullName" Type="Edm.String" MaxLength="80"/>
         <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
         <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
         <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
         <NavigationProperty Name="DraftAdministrativeData" Type="db.station.service.CarService.DraftAdministrativeData" ContainsTarget="true"/>
         <NavigationProperty Name="SiblingEntity" Type="db.station.service.CarService.Customers"/>
+        <Property Name="DraftMessages" Type="Collection(db.station.service.CarService.DRAFT_DraftAdministrativeData_DraftMessage)" Nullable="true"/>
+      </EntityType>
+      <EntityType Name="Parts">
+        <Key>
+          <PropertyRef Name="ID"/>
+          <PropertyRef Name="IsActiveEntity"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="name" Type="Edm.String" MaxLength="100"/>
+        <Property Name="partNumber" Type="Edm.String" MaxLength="50"/>
+        <Property Name="description" Type="Edm.String" MaxLength="500"/>
+        <Property Name="unitPrice" Type="Edm.Decimal" Precision="11" Scale="2"/>
+        <Property Name="stock" Type="Edm.Decimal" Precision="9" Scale="2"/>
+        <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+        <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <NavigationProperty Name="DraftAdministrativeData" Type="db.station.service.CarService.DraftAdministrativeData" ContainsTarget="true"/>
+        <NavigationProperty Name="SiblingEntity" Type="db.station.service.CarService.Parts"/>
+        <Property Name="DraftMessages" Type="Collection(db.station.service.CarService.DRAFT_DraftAdministrativeData_DraftMessage)" Nullable="true"/>
+      </EntityType>
+      <EntityType Name="RepairOrderItems">
+        <Key>
+          <PropertyRef Name="ID"/>
+          <PropertyRef Name="IsActiveEntity"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+        <NavigationProperty Name="repairOrder" Type="db.station.service.CarService.RepairOrders">
+          <ReferentialConstraint Property="repairOrder_ID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <Property Name="repairOrder_ID" Type="Edm.Guid"/>
+        <NavigationProperty Name="part" Type="db.station.service.CarService.Parts">
+          <ReferentialConstraint Property="part_ID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <Property Name="part_ID" Type="Edm.Guid"/>
+        <Property Name="quantity" Type="Edm.Decimal" Precision="9" Scale="2"/>
+        <Property Name="unitPrice" Type="Edm.Decimal" Precision="9" Scale="2"/>
+        <Property Name="totalPrice" Type="Edm.Decimal" Precision="11" Scale="2"/>
+        <Property Name="notes" Type="Edm.String" MaxLength="2000"/>
+        <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+        <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <NavigationProperty Name="DraftAdministrativeData" Type="db.station.service.CarService.DraftAdministrativeData" ContainsTarget="true"/>
+        <NavigationProperty Name="SiblingEntity" Type="db.station.service.CarService.RepairOrderItems"/>
+        <Property Name="DraftMessages" Type="Collection(db.station.service.CarService.DRAFT_DraftAdministrativeData_DraftMessage)" Nullable="true"/>
+      </EntityType>
+      <EntityType Name="RepairOrders">
+        <Key>
+          <PropertyRef Name="ID"/>
+          <PropertyRef Name="IsActiveEntity"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+        <NavigationProperty Name="car" Type="db.station.service.CarService.Cars">
+          <ReferentialConstraint Property="car_ID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <Property Name="car_ID" Type="Edm.Guid"/>
+        <Property Name="status" Type="Edm.String" DefaultValue="NEW"/>
+        <Property Name="description" Type="Edm.String" MaxLength="1000"/>
+        <Property Name="plannedDate" Type="Edm.Date"/>
+        <Property Name="startDate" Type="Edm.DateTimeOffset"/>
+        <Property Name="endDate" Type="Edm.DateTimeOffset"/>
+        <Property Name="mileage" Type="Edm.Int32"/>
+        <Property Name="notes" Type="Edm.String" MaxLength="2000"/>
+        <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+        <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <NavigationProperty Name="DraftAdministrativeData" Type="db.station.service.CarService.DraftAdministrativeData" ContainsTarget="true"/>
+        <NavigationProperty Name="SiblingEntity" Type="db.station.service.CarService.RepairOrders"/>
+        <Property Name="DraftMessages" Type="Collection(db.station.service.CarService.DRAFT_DraftAdministrativeData_DraftMessage)" Nullable="true"/>
+      </EntityType>
+      <EntityType Name="RepairOrderServices">
+        <Key>
+          <PropertyRef Name="ID"/>
+          <PropertyRef Name="IsActiveEntity"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+        <NavigationProperty Name="repairOrder" Type="db.station.service.CarService.RepairOrders">
+          <ReferentialConstraint Property="repairOrder_ID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <Property Name="repairOrder_ID" Type="Edm.Guid"/>
+        <NavigationProperty Name="service" Type="db.station.service.CarService.Services">
+          <ReferentialConstraint Property="service_ID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <Property Name="service_ID" Type="Edm.Guid"/>
+        <Property Name="quantity" Type="Edm.Decimal" Precision="9" Scale="2"/>
+        <Property Name="unitPrice" Type="Edm.Decimal" Precision="11" Scale="2"/>
+        <Property Name="totalPrice" Type="Edm.Decimal" Precision="11" Scale="2"/>
+        <Property Name="notes" Type="Edm.String" MaxLength="2000"/>
+        <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+        <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <NavigationProperty Name="DraftAdministrativeData" Type="db.station.service.CarService.DraftAdministrativeData" ContainsTarget="true"/>
+        <NavigationProperty Name="SiblingEntity" Type="db.station.service.CarService.RepairOrderServices"/>
+        <Property Name="DraftMessages" Type="Collection(db.station.service.CarService.DRAFT_DraftAdministrativeData_DraftMessage)" Nullable="true"/>
+      </EntityType>
+      <EntityType Name="Services">
+        <Key>
+          <PropertyRef Name="ID"/>
+          <PropertyRef Name="IsActiveEntity"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="name" Type="Edm.String" MaxLength="100"/>
+        <Property Name="description" Type="Edm.String" MaxLength="500"/>
+        <Property Name="price" Type="Edm.Decimal" Precision="11" Scale="2"/>
+        <Property Name="duration" Type="Edm.Int32"/>
+        <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+        <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <NavigationProperty Name="DraftAdministrativeData" Type="db.station.service.CarService.DraftAdministrativeData" ContainsTarget="true"/>
+        <NavigationProperty Name="SiblingEntity" Type="db.station.service.CarService.Services"/>
         <Property Name="DraftMessages" Type="Collection(db.station.service.CarService.DRAFT_DraftAdministrativeData_DraftMessage)" Nullable="true"/>
       </EntityType>
       <EntityType Name="DraftAdministrativeData">
@@ -108,6 +263,31 @@
         <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
         <ReturnType Type="db.station.service.CarService.Customers"/>
       </Action>
+      <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="db.station.service.CarService.Parts"/>
+        <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+        <ReturnType Type="db.station.service.CarService.Parts"/>
+      </Action>
+      <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="db.station.service.CarService.RepairOrderItems"/>
+        <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+        <ReturnType Type="db.station.service.CarService.RepairOrderItems"/>
+      </Action>
+      <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="db.station.service.CarService.RepairOrders"/>
+        <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+        <ReturnType Type="db.station.service.CarService.RepairOrders"/>
+      </Action>
+      <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="db.station.service.CarService.RepairOrderServices"/>
+        <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+        <ReturnType Type="db.station.service.CarService.RepairOrderServices"/>
+      </Action>
+      <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="db.station.service.CarService.Services"/>
+        <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+        <ReturnType Type="db.station.service.CarService.Services"/>
+      </Action>
       <Action Name="draftActivate" IsBound="true" EntitySetPath="in">
         <Parameter Name="in" Type="db.station.service.CarService.Cars"/>
         <ReturnType Type="db.station.service.CarService.Cars"/>
@@ -115,6 +295,26 @@
       <Action Name="draftActivate" IsBound="true" EntitySetPath="in">
         <Parameter Name="in" Type="db.station.service.CarService.Customers"/>
         <ReturnType Type="db.station.service.CarService.Customers"/>
+      </Action>
+      <Action Name="draftActivate" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="db.station.service.CarService.Parts"/>
+        <ReturnType Type="db.station.service.CarService.Parts"/>
+      </Action>
+      <Action Name="draftActivate" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="db.station.service.CarService.RepairOrderItems"/>
+        <ReturnType Type="db.station.service.CarService.RepairOrderItems"/>
+      </Action>
+      <Action Name="draftActivate" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="db.station.service.CarService.RepairOrders"/>
+        <ReturnType Type="db.station.service.CarService.RepairOrders"/>
+      </Action>
+      <Action Name="draftActivate" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="db.station.service.CarService.RepairOrderServices"/>
+        <ReturnType Type="db.station.service.CarService.RepairOrderServices"/>
+      </Action>
+      <Action Name="draftActivate" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="db.station.service.CarService.Services"/>
+        <ReturnType Type="db.station.service.CarService.Services"/>
       </Action>
       <Action Name="draftEdit" IsBound="true" EntitySetPath="in">
         <Parameter Name="in" Type="db.station.service.CarService.Cars"/>
@@ -125,30 +325,145 @@
         <Parameter Name="in" Type="db.station.service.CarService.Customers"/>
         <Parameter Name="PreserveChanges" Type="Edm.Boolean"/>
         <ReturnType Type="db.station.service.CarService.Customers"/>
+      </Action>
+      <Action Name="draftEdit" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="db.station.service.CarService.Parts"/>
+        <Parameter Name="PreserveChanges" Type="Edm.Boolean"/>
+        <ReturnType Type="db.station.service.CarService.Parts"/>
+      </Action>
+      <Action Name="draftEdit" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="db.station.service.CarService.RepairOrderItems"/>
+        <Parameter Name="PreserveChanges" Type="Edm.Boolean"/>
+        <ReturnType Type="db.station.service.CarService.RepairOrderItems"/>
+      </Action>
+      <Action Name="draftEdit" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="db.station.service.CarService.RepairOrders"/>
+        <Parameter Name="PreserveChanges" Type="Edm.Boolean"/>
+        <ReturnType Type="db.station.service.CarService.RepairOrders"/>
+      </Action>
+      <Action Name="draftEdit" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="db.station.service.CarService.RepairOrderServices"/>
+        <Parameter Name="PreserveChanges" Type="Edm.Boolean"/>
+        <ReturnType Type="db.station.service.CarService.RepairOrderServices"/>
+      </Action>
+      <Action Name="draftEdit" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="db.station.service.CarService.Services"/>
+        <Parameter Name="PreserveChanges" Type="Edm.Boolean"/>
+        <ReturnType Type="db.station.service.CarService.Services"/>
       </Action>
       <Annotations Target="db.station.service.CarService.EntityContainer">
         <Annotation Term="Common.AddressViaNavigationPath" Bool="true"/>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Cars">
+        <Annotation Term="UI.SelectionFields">
+          <Collection>
+            <PropertyPath>brand</PropertyPath>
+            <PropertyPath>model</PropertyPath>
+            <PropertyPath>year</PropertyPath>
+            <PropertyPath>licensePlate</PropertyPath>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="licensePlate"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="20%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="brand"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="20%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="model"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="20%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="year"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="20%"/>
+                </Record>
+              </Annotation>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="mileage"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="vin"/>
+            </Record>
+            <Record Type="UI.DataFieldForAnnotation">
+              <PropertyValue Property="Target" AnnotationPath="@Communication.Contact#contact"/>
+              <PropertyValue Property="Label" String="{i18n>CONTACT_NAME}"/>
+            </Record>
+          </Collection>
+        </Annotation>
         <Annotation Term="UI.FieldGroup" Qualifier="GeneratedGroup">
           <Record Type="UI.FieldGroupType">
             <PropertyValue Property="Data">
               <Collection>
                 <Record Type="UI.DataField">
-                  <PropertyValue Property="Label" String="licensePlate"/>
                   <PropertyValue Property="Value" Path="licensePlate"/>
+                  <Annotation Term="HTML5.CssDefaults">
+                    <Record Type="HTML5.CssDefaultsType">
+                      <PropertyValue Property="width" String="20%"/>
+                    </Record>
+                  </Annotation>
                 </Record>
                 <Record Type="UI.DataField">
-                  <PropertyValue Property="Label" String="brand"/>
                   <PropertyValue Property="Value" Path="brand"/>
+                  <Annotation Term="HTML5.CssDefaults">
+                    <Record Type="HTML5.CssDefaultsType">
+                      <PropertyValue Property="width" String="20%"/>
+                    </Record>
+                  </Annotation>
                 </Record>
                 <Record Type="UI.DataField">
-                  <PropertyValue Property="Label" String="model"/>
                   <PropertyValue Property="Value" Path="model"/>
+                  <Annotation Term="HTML5.CssDefaults">
+                    <Record Type="HTML5.CssDefaultsType">
+                      <PropertyValue Property="width" String="20%"/>
+                    </Record>
+                  </Annotation>
                 </Record>
                 <Record Type="UI.DataField">
-                  <PropertyValue Property="Label" String="year"/>
                   <PropertyValue Property="Value" Path="year"/>
+                  <Annotation Term="HTML5.CssDefaults">
+                    <Record Type="HTML5.CssDefaultsType">
+                      <PropertyValue Property="width" String="20%"/>
+                    </Record>
+                  </Annotation>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="mileage"/>
+                  <Annotation Term="HTML5.CssDefaults">
+                    <Record Type="HTML5.CssDefaultsType">
+                      <PropertyValue Property="width" String="20%"/>
+                    </Record>
+                  </Annotation>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="vin"/>
+                  <Annotation Term="HTML5.CssDefaults">
+                    <Record Type="HTML5.CssDefaultsType">
+                      <PropertyValue Property="width" String="20%"/>
+                    </Record>
+                  </Annotation>
+                </Record>
+                <Record Type="UI.DataFieldForAnnotation">
+                  <PropertyValue Property="Target" AnnotationPath="@Communication.Contact#contact"/>
+                  <PropertyValue Property="Label" String="{i18n>CONTACT_NAME}"/>
                 </Record>
               </Collection>
             </PropertyValue>
@@ -158,45 +473,34 @@
           <Collection>
             <Record Type="UI.ReferenceFacet">
               <PropertyValue Property="ID" String="GeneratedFacet1"/>
-              <PropertyValue Property="Label" String="General Information"/>
+              <PropertyValue Property="Label" String="{i18n>GENERAL_INFORMATION}"/>
               <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#GeneratedGroup"/>
             </Record>
           </Collection>
         </Annotation>
-        <Annotation Term="UI.LineItem">
+        <Annotation Term="UI.CreateFields">
           <Collection>
             <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="licensePlate"/>
               <PropertyValue Property="Value" Path="licensePlate"/>
             </Record>
             <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="brand"/>
+              <PropertyValue Property="Value" Path="vin"/>
+            </Record>
+            <Record Type="UI.DataField">
               <PropertyValue Property="Value" Path="brand"/>
             </Record>
             <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="model"/>
               <PropertyValue Property="Value" Path="model"/>
             </Record>
             <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="year"/>
               <PropertyValue Property="Value" Path="year"/>
             </Record>
             <Record Type="UI.DataField">
-              <PropertyValue Property="Value" Path="customerFullName"/>
-              <PropertyValue Property="Label" String="name"/>
+              <PropertyValue Property="Value" Path="mileage"/>
             </Record>
-            <Record Type="UI.DataFieldForAnnotation">
-              <PropertyValue Property="Target" AnnotationPath="@Communication.Contact#contact"/>
-              <PropertyValue Property="Label" String="Contact Name"/>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="customer"/>
             </Record>
-          </Collection>
-        </Annotation>
-        <Annotation Term="UI.SelectionFields">
-          <Collection>
-            <PropertyPath>brand</PropertyPath>
-            <PropertyPath>model</PropertyPath>
-            <PropertyPath>year</PropertyPath>
-            <PropertyPath>licensePlate</PropertyPath>
           </Collection>
         </Annotation>
         <Annotation Term="Communication.Contact" Qualifier="contact">
@@ -204,6 +508,7 @@
             <PropertyValue Property="fn" Path="customerFullName"/>
           </Record>
         </Annotation>
+        <Annotation Term="Common.Label" String="{i18n>CARS_ENTITY}"/>
         <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
           <Record Type="Common.SideEffectsType">
             <PropertyValue Property="SourceEntities">
@@ -244,14 +549,15 @@
         </Annotation>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Cars/ID">
+        <Annotation Term="UI.Hidden" Bool="true"/>
         <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Cars/createdAt">
+        <Annotation Term="Common.Label" String="{i18n>CREATED_AT}"/>
         <Annotation Term="UI.HiddenFilter" Bool="true"/>
         <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
         <Annotation Term="Core.Immutable" Bool="true"/>
         <Annotation Term="Core.Computed" Bool="true"/>
-        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Cars/createdBy">
         <Annotation Term="UI.HiddenFilter" Bool="true"/>
@@ -262,10 +568,10 @@
         <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Cars/modifiedAt">
+        <Annotation Term="Common.Label" String="{i18n>MODIFIED_AT}"/>
         <Annotation Term="UI.HiddenFilter" Bool="true"/>
         <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
         <Annotation Term="Core.Computed" Bool="true"/>
-        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Cars/modifiedBy">
         <Annotation Term="UI.HiddenFilter" Bool="true"/>
@@ -275,21 +581,150 @@
         <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Cars/licensePlate">
-        <Annotation Term="Common.Label" String="licensePlate"/>
+        <Annotation Term="Common.Label" String="{i18n>LICENSE_PLATE}"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Cars/brand">
-        <Annotation Term="Common.Label" String="brand"/>
+        <Annotation Term="Common.Label" String="{i18n>BRAND}"/>
+        <Annotation Term="Validation.AllowedValues">
+          <Collection>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="BMW"/>
+              <PropertyValue Property="Value" String="BMW"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="AUDI"/>
+              <PropertyValue Property="Value" String="AUDI"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="MERCEDES"/>
+              <PropertyValue Property="Value" String="MERCEDES"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="VOLKSWAGEN"/>
+              <PropertyValue Property="Value" String="VOLKSWAGEN"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="TOYOTA"/>
+              <PropertyValue Property="Value" String="TOYOTA"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="HONDA"/>
+              <PropertyValue Property="Value" String="HONDA"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="FORD"/>
+              <PropertyValue Property="Value" String="FORD"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="OPEL"/>
+              <PropertyValue Property="Value" String="OPEL"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="SKODA"/>
+              <PropertyValue Property="Value" String="SKODA"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="VOLVO"/>
+              <PropertyValue Property="Value" String="VOLVO"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="TESLA"/>
+              <PropertyValue Property="Value" String="TESLA"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="NISSAN"/>
+              <PropertyValue Property="Value" String="NISSAN"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="HYUNDAI"/>
+              <PropertyValue Property="Value" String="HYUNDAI"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="KIA"/>
+              <PropertyValue Property="Value" String="KIA"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="MAZDA"/>
+              <PropertyValue Property="Value" String="MAZDA"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="SUBARU"/>
+              <PropertyValue Property="Value" String="SUBARU"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="PEUGEOT"/>
+              <PropertyValue Property="Value" String="PEUGEOT"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="RENAULT"/>
+              <PropertyValue Property="Value" String="RENAULT"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="CITROEN"/>
+              <PropertyValue Property="Value" String="CITROEN"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="FIAT"/>
+              <PropertyValue Property="Value" String="FIAT"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="PORSCHE"/>
+              <PropertyValue Property="Value" String="PORSCHE"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="LAND_ROVER"/>
+              <PropertyValue Property="Value" String="LAND_ROVER"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="JAGUAR"/>
+              <PropertyValue Property="Value" String="JAGUAR"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="LEXUS"/>
+              <PropertyValue Property="Value" String="LEXUS"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="MITSUBISHI"/>
+              <PropertyValue Property="Value" String="MITSUBISHI"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="SUZUKI"/>
+              <PropertyValue Property="Value" String="SUZUKI"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="OTHER"/>
+              <PropertyValue Property="Value" String="OTHER"/>
+            </Record>
+          </Collection>
+        </Annotation>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Cars/model">
-        <Annotation Term="Common.Label" String="model"/>
+        <Annotation Term="Common.Label" String="{i18n>MODEL}"/>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Cars/year">
-        <Annotation Term="Common.Label" String="year"/>
+        <Annotation Term="Common.Label" String="{i18n>CAR_YEAR}"/>
+        <Annotation Term="Validation.Pattern" String="^(19[5-9][0-9]|20[0-2][0-9]|2026)$"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Cars/mileage">
+        <Annotation Term="Common.Label" String="{i18n>MILEAGE}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Cars/vin">
+        <Annotation Term="Common.Label" String="{i18n>VIN_NUMBER}"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Cars/customer">
+        <Annotation Term="Common.Label" String="{i18n>CUSTOMER}"/>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Cars/customer_ID">
+        <Annotation Term="Common.Label" String="{i18n>CUSTOMER}"/>
+        <Annotation Term="Common.Text" Path="customerFullName">
+          <Annotation Term="UI.TextArrangement" EnumMember="UI.TextArrangementType/TextOnly"/>
+        </Annotation>
         <Annotation Term="Common.ValueList">
           <Record Type="Common.ValueListType">
             <PropertyValue Property="CollectionPath" String="Customers"/>
+            <PropertyValue Property="SearchSupported" Bool="true"/>
             <PropertyValue Property="Parameters">
               <Collection>
                 <Record Type="Common.ValueListParameterInOut">
@@ -297,10 +732,7 @@
                   <PropertyValue Property="ValueListProperty" String="ID"/>
                 </Record>
                 <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="name"/>
-                </Record>
-                <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="surname"/>
+                  <PropertyValue Property="ValueListProperty" String="fullName"/>
                 </Record>
                 <Record Type="Common.ValueListParameterDisplayOnly">
                   <PropertyValue Property="ValueListProperty" String="email"/>
@@ -309,8 +741,10 @@
             </PropertyValue>
           </Record>
         </Annotation>
+        <Annotation Term="Core.Immutable" Bool="true"/>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Cars/customerFullName">
+        <Annotation Term="UI.Hidden" Bool="true"/>
         <Annotation Term="Core.Computed" Bool="true"/>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Cars/IsActiveEntity">
@@ -329,6 +763,30 @@
         <Annotation Term="Core.Computed" Bool="true"/>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Customers">
+        <Annotation Term="UI.HeaderInfo">
+          <Record Type="UI.HeaderInfoType">
+            <PropertyValue Property="TypeName" String="Customer"/>
+            <PropertyValue Property="TypeNamePlural" String="Customers"/>
+            <PropertyValue Property="Title">
+              <Record Type="UI.DataField">
+                <PropertyValue Property="Value" Path="fullName"/>
+              </Record>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="name"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="surname"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="email"/>
+            </Record>
+          </Collection>
+        </Annotation>
         <Annotation Term="UI.FieldGroup" Qualifier="GeneratedGroup">
           <Record Type="UI.FieldGroupType">
             <PropertyValue Property="Data">
@@ -337,11 +795,9 @@
                   <PropertyValue Property="Value" Path="name"/>
                 </Record>
                 <Record Type="UI.DataField">
-                  <PropertyValue Property="Label" String="surname"/>
                   <PropertyValue Property="Value" Path="surname"/>
                 </Record>
                 <Record Type="UI.DataField">
-                  <PropertyValue Property="Label" String="email"/>
                   <PropertyValue Property="Value" Path="email"/>
                 </Record>
               </Collection>
@@ -357,21 +813,7 @@
             </Record>
           </Collection>
         </Annotation>
-        <Annotation Term="UI.LineItem">
-          <Collection>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Value" Path="name"/>
-            </Record>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="surname"/>
-              <PropertyValue Property="Value" Path="surname"/>
-            </Record>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="email"/>
-              <PropertyValue Property="Value" Path="email"/>
-            </Record>
-          </Collection>
-        </Annotation>
+        <Annotation Term="Common.Label" String="{i18n>CUSTOMER_ENTITY}"/>
         <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
           <Record Type="Common.SideEffectsType">
             <PropertyValue Property="SourceEntities">
@@ -412,13 +854,23 @@
         </Annotation>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Customers/ID">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Common.Text" Path="fullName"/>
         <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Customers/name">
-        <Annotation Term="Common.Label" String="customer/name"/>
+        <Annotation Term="Common.Label" String="{i18n>CUSTOMER_NAME}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Customers/surname">
+        <Annotation Term="Common.Label" String="{i18n>CUSTOMER_SURNAME}"/>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Customers/email">
+        <Annotation Term="Common.Label" String="{i18n>CUSTOMER_EMAIL}"/>
         <Annotation Term="Validation.Pattern" String="/^\S+@\S+\.\S+$/"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Customers/fullName">
+        <Annotation Term="Common.Label" String="{i18n>CUSTOMER_CONTACT}"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Customers/IsActiveEntity">
         <Annotation Term="UI.Hidden" Bool="true"/>
@@ -433,6 +885,543 @@
         <Annotation Term="UI.Hidden" Bool="true"/>
       </Annotations>
       <Annotations Target="db.station.service.CarService.Customers/DraftMessages">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Parts">
+        <Annotation Term="UI.FieldGroup" Qualifier="GeneratedGroup">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Label" String="name"/>
+                  <PropertyValue Property="Value" Path="name"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Label" String="partNumber"/>
+                  <PropertyValue Property="Value" Path="partNumber"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Label" String="unitPrice"/>
+                  <PropertyValue Property="Value" Path="unitPrice"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Label" String="stock"/>
+                  <PropertyValue Property="Value" Path="stock"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.Facets">
+          <Collection>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="GeneratedFacet1"/>
+              <PropertyValue Property="Label" String="General Information"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#GeneratedGroup"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="name"/>
+              <PropertyValue Property="Value" Path="name"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="partNumber"/>
+              <PropertyValue Property="Value" Path="partNumber"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="unitPrice"/>
+              <PropertyValue Property="Value" Path="unitPrice"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="stock"/>
+              <PropertyValue Property="Value" Path="stock"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.SelectionFields">
+          <Collection>
+            <PropertyPath>brand</PropertyPath>
+            <PropertyPath>model</PropertyPath>
+            <PropertyPath>year</PropertyPath>
+            <PropertyPath>licensePlate</PropertyPath>
+          </Collection>
+        </Annotation>
+        <Annotation Term="Communication.Contact" Qualifier="contact">
+          <Record Type="Communication.ContactType">
+            <PropertyValue Property="fn" Path="customerFullName"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Messages" Path="DraftMessages"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.EntityContainer/Parts">
+        <Annotation Term="Common.DraftRoot">
+          <Record Type="Common.DraftRootType">
+            <PropertyValue Property="ActivationAction" String="db.station.service.CarService.draftActivate"/>
+            <PropertyValue Property="EditAction" String="db.station.service.CarService.draftEdit"/>
+            <PropertyValue Property="PreparationAction" String="db.station.service.CarService.draftPrepare"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Parts/ID">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Parts/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Parts/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Parts/modifiedAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Parts/modifiedBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Parts/partNumber">
+        <Annotation Term="Core.Immutable" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Parts/IsActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Parts/HasActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Parts/HasDraftEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Parts/DraftAdministrativeData">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Parts/DraftMessages">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderItems">
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Messages" Path="DraftMessages"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.EntityContainer/RepairOrderItems">
+        <Annotation Term="Common.DraftRoot">
+          <Record Type="Common.DraftRootType">
+            <PropertyValue Property="ActivationAction" String="db.station.service.CarService.draftActivate"/>
+            <PropertyValue Property="EditAction" String="db.station.service.CarService.draftEdit"/>
+            <PropertyValue Property="PreparationAction" String="db.station.service.CarService.draftPrepare"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderItems/ID">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderItems/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderItems/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderItems/modifiedAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderItems/modifiedBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderItems/IsActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderItems/HasActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderItems/HasDraftEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderItems/DraftAdministrativeData">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderItems/DraftMessages">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrders">
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Messages" Path="DraftMessages"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.EntityContainer/RepairOrders">
+        <Annotation Term="Common.DraftRoot">
+          <Record Type="Common.DraftRootType">
+            <PropertyValue Property="ActivationAction" String="db.station.service.CarService.draftActivate"/>
+            <PropertyValue Property="EditAction" String="db.station.service.CarService.draftEdit"/>
+            <PropertyValue Property="PreparationAction" String="db.station.service.CarService.draftPrepare"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrders/ID">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrders/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrders/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrders/modifiedAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrders/modifiedBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrders/status">
+        <Annotation Term="Validation.AllowedValues">
+          <Collection>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="NEW"/>
+              <PropertyValue Property="Value" String="NEW"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="DIAGNOSIS"/>
+              <PropertyValue Property="Value" String="DIAGNOSIS"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="WAITING_FOR_APPROVAL"/>
+              <PropertyValue Property="Value" String="WAITING_FOR_APPROVAL"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="APPROVED"/>
+              <PropertyValue Property="Value" String="APPROVED"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="IN_PROGRESS"/>
+              <PropertyValue Property="Value" String="IN_PROGRESS"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="WAITING_FOR_PARTS"/>
+              <PropertyValue Property="Value" String="WAITING_FOR_PARTS"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="COMPLETED"/>
+              <PropertyValue Property="Value" String="COMPLETED"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="CANCELLED"/>
+              <PropertyValue Property="Value" String="CANCELLED"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrders/IsActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrders/HasActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrders/HasDraftEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrders/DraftAdministrativeData">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrders/DraftMessages">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderServices">
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Messages" Path="DraftMessages"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.EntityContainer/RepairOrderServices">
+        <Annotation Term="Common.DraftRoot">
+          <Record Type="Common.DraftRootType">
+            <PropertyValue Property="ActivationAction" String="db.station.service.CarService.draftActivate"/>
+            <PropertyValue Property="EditAction" String="db.station.service.CarService.draftEdit"/>
+            <PropertyValue Property="PreparationAction" String="db.station.service.CarService.draftPrepare"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderServices/ID">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderServices/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderServices/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderServices/modifiedAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderServices/modifiedBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderServices/IsActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderServices/HasActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderServices/HasDraftEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderServices/DraftAdministrativeData">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.RepairOrderServices/DraftMessages">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Services">
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Messages" Path="DraftMessages"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.EntityContainer/Services">
+        <Annotation Term="Common.DraftRoot">
+          <Record Type="Common.DraftRootType">
+            <PropertyValue Property="ActivationAction" String="db.station.service.CarService.draftActivate"/>
+            <PropertyValue Property="EditAction" String="db.station.service.CarService.draftEdit"/>
+            <PropertyValue Property="PreparationAction" String="db.station.service.CarService.draftPrepare"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Services/ID">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Services/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Services/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Services/modifiedAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Services/modifiedBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Services/IsActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Services/HasActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Services/HasDraftEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Services/DraftAdministrativeData">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="db.station.service.CarService.Services/DraftMessages">
         <Annotation Term="Core.Computed" Bool="true"/>
       </Annotations>
       <Annotations Target="db.station.service.CarService.DraftAdministrativeData">

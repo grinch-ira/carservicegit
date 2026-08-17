@@ -1,0 +1,5 @@
+ID,repairOrder_ID,part_id,quantity,unitPrice,totalPrice,notes,createdAt,createdBy,modifiedAt,modifiedBy
+ff1e625d-d224-4be0-b0cb-f8ed93418643,7edf8093-e6d7-4625-b4c3-104ebebcccee,49beb860-bcc8-4b9d-b6fb-c99894074f76,1,12.50,12.50,Oil filter,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+9861335d-58af-4337-8b11-d4454e0e69e2,7edf8093-e6d7-4625-b4c3-104ebebcccee,837c88d6-d573-4a07-b438-a09477ef03a7,5,9.00,45.00,5 liters of engine oil,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+7391ced2-089e-4ae5-9eb9-ba2444c730c3,50ee2f7c-9aa3-4f05-b525-d79b8970ca3c,f7dfc9db-d9cf-42ea-9007-7ea17b4f51b9,1,80.00,80.00,Front brake pads,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+9b282a1e-3ef5-4638-9974-452e0200eacf,177fb861-795c-458e-8403-184d040f9b92,4753272e-d682-44f8-b2bd-05c49f926916,1,15.00,15.00,Air filter replacement,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer

@@ -11,6 +11,10 @@ sap.ui.define([
 
         onCustomersPress: function () {
             window.location.href = "/customers/webapp/index.html";
+        },
+
+        onPartspress: function () {
+            window.location.href = "/parts/webapp/index.html";
         }
 
     });

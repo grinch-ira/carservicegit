@@ -1,0 +1,7 @@
+ID,repairOrder_ID,service_ID,quantity,unitPrice,totalPrice,notes,createdAt,createdBy,modifiedAt,modifiedBy
+7abe5c4b-b653-4014-84ac-c3fa3ec8538c,7edf8093-e6d7-4625-b4c3-104ebebcccee,a7c6409f-9d72-43f4-a234-82a3b1186904,1,50.00,50.00,Regular oil change,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+c94b24c7-d38d-48ef-a753-d888060fc3e7,7edf8093-e6d7-4625-b4c3-104ebebcccee,67013acb-82da-4127-850b-f8264fff9eb6,1,30.00,30.00,Check front brakes,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+f681ca10-7183-4d22-85c8-199d6d04fdee,50ee2f7c-9aa3-4f05-b525-d79b8970ca3c,67013acb-82da-4127-850b-f8264fff9eb6,1,30.00,30.00,Full brake inspection,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+380fec49-8aec-44f2-aec6-0a84c2ab0958,50ee2f7c-9aa3-4f05-b525-d79b8970ca3c,dc340e4a-03e7-43b4-80b2-c04cce0194e5,1,120.00,120.00,Front brake pads,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+dde6bceb-18a7-4a72-ad09-f39ebbea8dd5,125bd6ef-f14d-4cea-bac2-c64f2607bb55,f494d799-8fb7-4e55-a807-6aa32ae67bd5,1,60.00,60.00,Wheel alignment,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+07ad1a2b-ed6f-4cc2-b00a-fd012a9e28cc,09e2fba5-8fc8-4d25-9e80-459673d8083d,ec53c4c9-a462-405d-b8ae-d132f31244be,1,40.00,40.00,Diagnostic scan,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer

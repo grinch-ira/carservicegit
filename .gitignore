@@ -116,5 +116,4 @@ pip-selfcheck.json
 /default-env*.json
 
 # Data script are copied from other folders
-/db/data/
 localdev/

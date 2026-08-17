@@ -1,0 +1,7 @@
+ID,name,partNumber,description,unitPrice,stock,createdAt,createdBy,modifiedAt,modifiedBy
+49beb860-bcc8-4b9d-b6fb-c99894074f76,Oil filter,OF-001,Standard engine oil filter,12.50,25,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+837c88d6-d573-4a07-b438-a09477ef03a7,Engine oil 5W-30,EO-530,5W-30 synthetic engine oil per liter,9.00,80,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+f7dfc9db-d9cf-42ea-9007-7ea17b4f51b9,Brake pads front,BP-F-001,Front axle brake pads,80.00,12,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+478c6a5b-697a-4002-9941-8bca47e3988b,Brake pads rear,BP-R-001,Rear axle brake pads,70.00,15,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+4753272e-d682-44f8-b2bd-05c49f926916,Air filter,AF-001,Engine air filter,15.00,20,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
+81c92c2b-9dc2-4c28-8558-c8a4f29775df,Car battery,BAT-001,12V 70Ah car battery,140.00,8,2024-07-26T00:00:00.000Z,developer,2024-07-26T00:00:00.000Z,developer
